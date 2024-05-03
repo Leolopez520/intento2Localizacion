@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Geolocalización Automática</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div id="area-nav">
+        <h2>Geolocalización Automática</h2>
+        <div>Coordenadas:</div>
+        <div id="nlat"></div>
+        <div id="nlon"></div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            function obtenerUbicacion() {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        function (position) {
+                            var lat = position.coords.latitude;
+                            var lon = position.coords.longitude;
+                            $("#nlat").text(lat);
+                            $("#nlon").text(lon);
+
+                            console.log("Ubicación obtenida: Latitud " + lat + ", Longitud " + lon);
+                            enviarDatos(lat, lon);
+                        },
+                        function (error) {
+                            console.error("Error al obtener ubicación: ", error);
+                            alert("Error al obtener ubicación: " + error.message);
+                        },
+                        {
+                            maximumAge: 10000,
+                            timeout: 5000,
+                            enableHighAccuracy: true
+                        }
+                    );
+                } else {
+                    console.log("Geolocalización no es soportada por este navegador.");
+                    alert("Geolocalización no es soportada por este navegador.");
+                }
+            }
+
+            function enviarDatos(latitud, longitud) {
+                $.ajax({
+                    url: 'http://localhost:3000/datos_ubicacion',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ latitud: latitud, longitud: longitud }),
+                    success: function(response) {
+                        console.log('Respuesta del servidor:', response);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error al enviar datos:', xhr.statusText, status, error);
+                        alert('Error al enviar datos: ' + xhr.statusText);
+                    }
+                });
+            }
+
+            // Obtener ubicación inicialmente y repetir cada 20 segundos
+            obtenerUbicacion();
+            setInterval(obtenerUbicacion, 20000);
+        });
+    </script>
+</body>
+</html>
