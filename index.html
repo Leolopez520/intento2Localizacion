@@ -46,7 +46,7 @@
 
             function enviarDatos(latitud, longitud) {
                 $.ajax({
-                    url: 'http://localhost:3000/datos_ubicacion',
+                    url: 'https://leolopez520.github.io/intento2Localizacion/datos_ubicacion',
                     type: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify({ latitud: latitud, longitud: longitud }),
